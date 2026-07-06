@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autômatos no Campo - Agrotech Inteligente</title>
+    <style>
+        /* ==========================================================================
+           1. ESTILIZAÇÃO GERAL & LAYOUT
+           ========================================================================== */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        header {
+            background-color: #2e7d32;
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Menu de Navegação */
+        nav {
+            background-color: #1b5e20;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            display: inline-block;
+            color: white;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: #2e7d32;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            min-height: 60vh;
+        }
+
+        /* Controle de Visualização das Páginas */
+        .page {
+            display: none; /* Esconde todas as páginas por padrão */
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .page.active {
+            display: block; /* Mostra apenas a página ativa */
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #2e7d32;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* ==========================================================================
+           2. ESTILIZAÇÃO DO SIMULADOR (PÁGINA 3)
+           ========================================================================== */
+        .simulator-box {
+            background-color: #e8f5e9;
+            border: 2px solid #a5d6a7;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .state-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 1.5rem auto;
+            padding: 1.2rem;
+            border-radius: 6px;
+            max-width: 500px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        /* Cores dos Estados do Autômato */
+        .state-desligado { background-color: #b0bec5; color: #37474f; border: 1px solid #78909c; }
+        .state-ligado { background-color: #90caf9; color: #0d47a1; border: 1px solid #42a5f5; }
+        .state-alerta { background-color: #ef9a9a; color: #b71c1c; border: 1px solid #ef5350; }
+
+        .btn-container {
+            margin-top: 2rem;
+        }
+
+        button {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .log-box {
+            background: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid #cbd5e1;
+            margin-top: 0.5rem;
+        }
+
+        /* Rodapé */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #333;
+            color: white;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Autômatos no Campo</h1>
+        <p>Sistemas Inteligentes para a Agricultura de Precisão</p>
+    </header>
+
+    <nav>
+        <a onclick="navegar('home')" id="nav-home" class="active">Página Inicial</a>
+        <a onclick="navegar('teoria')" id="nav-teoria">A Teoria</a>
+        <a onclick="navegar('simulador')" id="nav-simulador">Simulador Interativo</a>
+    </nav>
+
+    <main>
+
+        <section id="page-home" class="page active">
+            <h2>Bem-vindo ao Futuro do Agronegócio</h2>
+            <p>A agricultura moderna exige eficiência, economia de recursos e respostas rápidas às mudanças climáticas. Mas como as máquinas tomam decisões sozinhas e seguras no campo?</p>
+            <p>A resposta está na <strong>Teoria da Computação</strong>. Através de autômatos e máquinas de estados finitos, conseguimos modelar o comportamento de sistemas agrícolas complexos de forma completamente lógica, previsível e automatizada.</p>
+            <p><strong>O que você encontrará aqui:</strong></p>
+            <ul>
+                <li>Entendimento prático de conceitos acadêmicos aplicados à computação no campo.</li>
+                <li>Modelagem formal de sensores e atuadores na agricultura de precisão.</li>
+                <li>Um simulador em tempo real para testar a lógica matemática de um sistema de irrigação.</li>
+            </ul>
+            <p>Clique em <em>"A Teoria"</em> para entender a matemática por trás do sistema ou vá direto para o <em>"Simulador Interativo"</em> para ver o autômato funcionando na prática!</p>
+        </section>
+
+
+        <section id="page-teoria" class="page">
+            <h2>O que são Autômatos Finitos?</h2>
+            <p>Um autômato é um modelo matemático de um sistema com entradas, estados e saídas. Ele muda de um estado para outro dependendo dos estímulos (eventos) que recebe do ambiente.</p>
+            
+            <h3>Mapeamento Computacional no Contexto Agrícola:</h3>
+            <ul>
+                <li><strong>Estados ($Q$):</strong> Representam as situações possíveis onde o maquinário ou sistema se encontra (ex: Sistema Desligado, Irrigando o Campo, Alerta de Evaporação).</li>
+                <li><strong>Alfabeto de Entrada ($\Sigma$):</strong> Representa as leituras brutas vindas dos sensores de campo (ex: solo seco, chuva detectada, temperatura crítica).</li>
+                <li><strong>Função de Transição ($\delta$):</strong> É a inteligência do sistema. São as regras lógicas que dizem: <em>"Se o sistema está no estado X e o sensor ler Y, o sistema deve ir para o estado Z"</em>.</li>
+            </ul>
+
+            <h3>Vantagens dessa abordagem no campo:</h3>
+            <p>Diferente de códigos cheios de condições confusas (vários <code>if/else</code> espalhados), um autômato garante que o sistema nunca entre em um estado inválido ou perigoso, evitando desperdício de água, quebra de maquinários ou falhas elétricas.</p>
+        </section>
+
+
+        <section id="page-simulador" class="page">
+            <h2>Simulador: Sistema de Irrigação Automatizado</h2>
+            <p>Interaja com os botões abaixo para simular os sinais enviados pelos sensores instalados na lavoura. O autômato vai processar o evento e alterar o estado do sistema de acordo com a matriz de transição.</p>
+            
+            <div class="simulator-box">
+                <p><strong>Estado Atual do Autômato:</strong></p>
+                <div id="status-sistema" class="state-display state-desligado">DESLIGADO (Solo Úmido / Economizando Água)</div>
+                
+                <p><em>Última leitura processada:</em> <br>
+                   <span id="historico" class="log-box">Nenhum evento recebido ainda.</span>
+                </p>
+
+                <div class="btn-container">
+                    <button onclick="enviarEvento('solo_seco')">Sensor: Solo Seco</button>
+                    <button onclick="enviarEvento('solo_umido')">Sensor: Solo Úmido</button>
+                    <button onclick="enviarEvento('critico')">Sensor: Sol Escaldante</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 - Autômatos no Campo. Desenvolvido para a disciplina de Teoria da Computação aplicada à Tecnologia Agrícola.</p>
+    </footer>
+
+    <script>
+        /* --- Roteamento da Página (SPA) --- */
+        function navegar(idPagina) {
+            // Esconde todas as páginas
+            const paginas = document.querySelectorAll('.page');
+            paginas.forEach(p => p.classList.remove('active'));
+
+            // Remove a classe active de todos os botões do menu
+            const linksMenu = document.querySelectorAll('nav a');
+            linksMenu.forEach(l => l.classList.remove('active'));
+
+            // Mostra a página selecionada e ativa o botão correspondente no menu
+            document.getElementById(`page-${idPagina}`).classList.add('active');
+            document.getElementById(`nav-${idPagina}`).classList.add('active');
+
+            // Rola a página para o topo suavemente ao mudar de aba
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* --- Lógica Matemática do Autômato --- */
+        // Matriz de Transição formal: [Estado Atual] -> [Evento de Entrada] -> [Próximo Estado]
+        const transicoes = {
+            'DESLIGADO': {
+                'solo_seco': 'LIGADO',
+                'critico': 'ALERTA',
+                'solo_umido': 'DESLIGADO'
+            },
+            'LIGADO': {
+                'solo_umido': 'DESLIGADO',
+                'critico': 'ALERTA',
+                'solo_seco': 'LIGADO'
+            },
+            'ALERTA': {
+                'solo_umido': 'DESLIGADO',
+                'solo_seco': 'LIGADO',
+                'critico': 'ALERTA'
+            }
+        };
+
+        // Estado Inicial (q0)
+        let estadoAtual = 'DESLIGADO';
+
+        function enviarEvento(evento) {
+            // Executa a função de transição δ(q, σ) -> q'
+            const proximoEstado = transicoes[estadoAtual][evento];
+            
+            if (proximoEstado) {
+                estadoAtual = proximoEstado;
+                atualizarInterface(evento);
+            }
+        }
+
+        function atualizarInterface(evento) {
+            const elementoStatus = document.getElementById('status-sistema');
+            const elementoHistorico = document.getElementById('historico');
+
+            // Formata o nome do evento para exibição amigável
+            let eventoFormatado = '';
+            if(evento === 'solo_seco') eventoFormatado = 'Sensor detectou Solo Seco 🍂';
+            if(evento === 'solo_umido') eventoFormatado = 'Sensor detectou Solo Úmido / Chuva 💧';
+            if(evento === 'critico') eventoFormatado = 'Sensor detectou Calor Crítico / Sol Escaldante ☀️';
+
+            elementoHistorico.innerHTML = `<strong>${eventoFormatado}</strong>`;
+
+            // Reseta as classes CSS de estado
+            elementoStatus.className = 'state-display';
+
+            // Aplica o comportamento visual e de texto baseado no novo Estado Atual
+            if (estadoAtual === 'DESLIGADO') {
+                elementoStatus.innerText = 'DESLIGADO (Solo Úmido / Economizando Água)';
+                elementoStatus.classList.add('state-desligado');
+            } else if (estadoAtual === 'LIGADO') {
+                elementoStatus.innerText = 'LIGADO (Válvulas Abertas - Irrigando a Lavoura)';
+                elementoStatus.classList.add('state-ligado');
+            } else if (estadoAtual === 'ALERTA') {
+                elementoStatus.innerText = 'ALERTA (Evaporação Máxima - Interrompendo para evitar desperdício)';
+                elementoStatus.classList.add('state-alerta');
+            }
+        }
+    </script>
+</body>
+</html>
